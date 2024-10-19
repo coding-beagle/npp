@@ -5,6 +5,9 @@ from rich.table import Table
 from rich.panel import Panel
 from rich.console import Console
 import time
+from rich import box
+
+from .input_handler import InputHandler
 
 
 class Editor():
@@ -21,7 +24,7 @@ class Editor():
 
         self.layout["header"].minimum_size = 1
         self.layout["file"].minimum_size = 10
-        self.layout["shortcuts"].minimum_size = 2
+        self.layout["shortcuts"].minimum_size = 3
 
         self.layout["header"].ratio = 1
         self.layout["file"].ratio = 6
@@ -30,6 +33,8 @@ class Editor():
         if (self.current_file != ""):
             with open(self.current_file, "r") as file:
                 self.current_file_content = file.read()
+
+        self.input_handler = InputHandler()
 
         self.run()
 
@@ -57,9 +62,14 @@ class Editor():
         return table
 
     def draw_shortcuts(self) -> Table:
-        table = Table.grid(expand=True)
+        table = Table(box=box.SIMPLE)
         shortcuts = "Shortcuts go here"
-        table.add_row(Panel(f"{shortcuts}"))
+        current_keys = ""
+        for i in self.input_handler.get_currently_pressed_keys():
+            current_keys += f"{i} "
+        table.add_row(f"Current keys: {current_keys}")
+        table.add_row(f"{shortcuts}")
+        table.add_row(f"Press [bold]Ctrl + C[/bold] to exit")
         return table
 
     def edit_files(self):
