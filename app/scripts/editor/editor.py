@@ -3,6 +3,7 @@ from rich.layout import Layout
 from rich import print
 from rich.table import Table
 from rich.panel import Panel
+from rich.console import Console
 import time
 
 
@@ -10,6 +11,7 @@ class Editor():
     current_file = ""
 
     def __init__(self, file_path=""):
+        self.console = Console()
         self.current_file = file_path
 
         self.layout = Layout()
@@ -34,7 +36,8 @@ class Editor():
     def draw_file_info(self) -> Table:
         table = Table.grid(expand=True)
         current_file = self.current_file if self.current_file else "Buffer"
-        table.add_row(Panel(f"{current_file}"))
+        table.add_row(
+            Panel(f"Currently editing: [blue][bold]{current_file}[/blue][/bold]"))
         return table
 
     def draw_file_content(self) -> Table:
@@ -43,8 +46,14 @@ class Editor():
         table.add_column("Separator", justify="left", no_wrap=True, ratio=1)
         table.add_column("Content", justify="left", no_wrap=True, ratio=100)
 
-        for index, row in enumerate(self.current_file_content.split("\n")):
-            table.add_row(str(index), "|", row)
+        split_content = self.current_file_content.split("\n")
+
+        for index, row in enumerate(range(self.console.size.height - 3)):
+            row_text = split_content[index] if index < len(
+                split_content) else ""
+            table.add_row(str(index), "|", row_text)
+
+        table.add_row("", "|", f"{self.console.size.height} lines")
         return table
 
     def draw_shortcuts(self) -> Table:
@@ -57,15 +66,15 @@ class Editor():
         self.layout["header"].update(self.draw_file_info())
         self.layout["file"].update(self.draw_file_content())
         self.layout["shortcuts"].update(self.draw_shortcuts())
-        breakpoint()
 
     def run(self):
         self.edit_files()
         while True:
             try:
-                with Live(self.layout, screen=True, refresh_per_second=15) as live_console:
+                with Live(self.layout, console=self.console, screen=True, refresh_per_second=1, transient=True) as live_console:
                     time.sleep(0.04)
                     live_console.update(self.edit_files())
+                    # breakpoint()
             except KeyboardInterrupt:
                 print("[bold]Exiting nano++ editor[/bold]")
                 break

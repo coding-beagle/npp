@@ -11,8 +11,9 @@ def cli():
 
 
 @cli.command()
-@click.argument('file_path', required=False, help="File path to open")
+@click.argument('file_path', required=False)
 def npp(file_path: str = ""):
+    """ FILE_PATH: Path to the file to be opened in nano++ """
     print(f"Opening nano++ editor, with file: {file_path}")
     editor = Editor(file_path)
 
