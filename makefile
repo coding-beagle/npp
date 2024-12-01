@@ -12,8 +12,11 @@ clean:
 	$(MAKE) clean-dist
 
 venv:
-	$(MAKE) clean-venv
-	python -m venv .venv && . .venv/scripts/activate
+	( \
+		python -m venv .venv; \
+		source .venv/scripts/activate; \
+		pip install build; \
+	)
 
 install:
 	pip install dist/*.whl
