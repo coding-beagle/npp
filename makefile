@@ -16,8 +16,6 @@ venv:
 	python -m venv .venv && . .venv/scripts/activate
 
 install:
-	$(MAKE) clean-dist
-	$(MAKE) build
-	$(MAKE) venv && pip install dist/*.whl
+	pip install dist/*.whl
 
 
