@@ -18,7 +18,13 @@ venv:
 		pip install build; \
 	)
 
-install:
+install-build:
 	pip install dist/*.whl
+
+install:
+	( \
+		pip install --editable .; \
+	)
+    
 
 
