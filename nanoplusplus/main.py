@@ -38,7 +38,8 @@ class Editor():
         "^Q": "Exit",
         "^O": "Write out",
         "^C": "Copy to clipboard",
-        "^V": "Paste from clipboard"
+        "^V": "Paste from clipboard",
+        "^X": "Cut to clipboard",
     }
 
     def __init__(self):
@@ -240,7 +241,7 @@ class Editor():
     def get_hotkey_help(self):
         hotkey_panel = VSplit([
             VSplit(
-                [Window(content=FormattedTextControl(text=f"{hotkey}"), width=Dimension(min=3, max=3), style="fg:#00ffaa bold"), Window(content="", width=Dimension(min=1, max=1)), Window(content=FormattedTextControl(text=f"{desc}"), width=Dimension(min=1, max=20), style="fg:#ffffff bold")],) for hotkey, desc in self.hotkeys.items()])
+                [Window(content=FormattedTextControl(text=f"{hotkey}"), width=Dimension(min=3, max=3), style="fg:#00ffaa bold"), Window(content="", width=Dimension(min=1, max=1)), Window(content=FormattedTextControl(text=f"{desc}"), width=Dimension(min=1, max=24), style="fg:#ffffff bold")],) for hotkey, desc in self.hotkeys.items()])
         return hotkey_panel
 
     def set_title(self, title):
@@ -260,10 +261,13 @@ def exit_(event):
 
 
 def save_file(text: str):
-    with open(text, "w") as fp:
-        fp.write(editor.buffer1.text)
+    try:
+        with open(text, "w") as fp:
+            fp.write(editor.buffer1.text)
 
-    editor.pop_up_text(f"{text} saved!", "#00ff00")
+        editor.pop_up_text(f"{text} saved!", "#00ff00")
+    except Exception as e:
+        editor.pop_up_text(f"Error saving {text}: {e}", "#ff0000")
 
 
 @kb.add('c-c', filter=~is_pop_up)
