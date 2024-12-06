@@ -10,6 +10,8 @@ from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.layout.dimension import Dimension
 from prompt_toolkit.styles import Style
 from prompt_toolkit.filters import Condition
+from prompt_toolkit.clipboard.pyperclip import PyperclipClipboard
+from prompt_toolkit.clipboard import Clipboard
 
 kb = KeyBindings()
 
@@ -38,6 +40,8 @@ class Editor():
 
         self.pop_up_enabled = False
 
+        self.clipboard = PyperclipClipboard()
+
         self.buffer1 = Buffer()
         self.text_window = Window(content=BufferControl(
             buffer=self.buffer1))
@@ -47,7 +51,7 @@ class Editor():
         self.update_ui()
 
         self.app = Application(layout=self.layout, full_screen=True,
-                               key_bindings=kb, style=style)
+                               key_bindings=kb, style=style, clipboard=self.clipboard)
 
     def update_ui(self):
         self.root_container = HSplit([
@@ -115,7 +119,7 @@ class Editor():
         self.app.layout = self.layout
         self.app.invalidate()
 
-    def pop_up_text_field(self, buffer_prefix, colour, yes_cb=None, no_cb=None, prefill=""):
+    def pop_up_text_field(self, buffer_prefix, colour, yes_cb=None, no_cb=None, prefill="", call_cb_with_buffer=False):
         if (self.pop_up_enabled):
             return
 
@@ -136,7 +140,11 @@ class Editor():
             self.pop_up_enabled = False
             self.app.invalidate()
             if (yes_cb is not None):
-                yes_cb()
+                if (call_cb_with_buffer):
+                    yes_cb(text_buffer.text)
+                else:
+                    yes_cb()
+                self.pop_up_enabled = False
 
         @kb.add('c-c', filter=is_pop_up)
         def no_handler(buffer):
@@ -187,11 +195,6 @@ class Editor():
         self.app.invalidate()
 
     def pop_up_text(self, text, colour):
-        if (self.pop_up_enabled):
-            return
-
-        self.pop_up_enabled = True
-
         text_window = Window(
             FormattedTextControl(text=text),
             style=f'bg:{colour} fg:#ffffff bold',
@@ -232,20 +235,36 @@ def exit_(event):
                           yes_cb=event.app.exit)
 
 
-def save_file():
-    with open(editor.file_name, "w") as fp:
+def save_file(text: str):
+    with open(text, "w") as fp:
         fp.write(editor.buffer1.text)
 
-    editor.pop_up_text(f"{editor.file_name} saved!", "#00ffcc")
+    editor.pop_up_text(f"{text} saved!", "#00ff00")
+
+
+@kb.add('c-c', filter=~is_pop_up)
+def copy_to_clipboard(event):
+    data = editor.buffer1.copy_selection()
+    editor.clipboard.set_data(data)
+    editor.pop_up_text("Copied to clipboard!", "#00ff00")
+
+
+@kb.add('c-v', filter=~is_pop_up)
+def paste_from_clipboard(event):
+    data = editor.clipboard.get_data()
+    editor.buffer1.insert_text(data.text)
+    editor.pop_up_text("Pasted from clipboard!", "#00ff00")
 
 
 @ kb.add('c-o')
 def write_out_(event, filter=~is_pop_up):
     file_name = ""
-    if (editor.file_name):
+    if (hasattr(editor, "file_name")):
         file_name = editor.file_name
+    else:
+        file_name = ""
     editor.pop_up_text_field("File name: ",
-                             "#ffccff", prefill=file_name, yes_cb=save_file)
+                             "#ffccff", prefill=file_name, yes_cb=save_file, call_cb_with_buffer=True)
 
 
 @ click.command()
