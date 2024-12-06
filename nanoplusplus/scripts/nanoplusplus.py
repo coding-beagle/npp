@@ -252,6 +252,7 @@ class Editor():
 
 
 @ kb.add('c-q', filter=~is_pop_up)
+@ kb.add('escape', filter=~is_pop_up)
 def exit_(event):
     editor.pop_up_confirm("Exit from file? (y/n)", "#00ccff",
                           yes_cb=event.app.exit)
@@ -276,6 +277,13 @@ def paste_from_clipboard(event):
     data = editor.clipboard.get_data()
     editor.buffer1.insert_text(data.text)
     editor.pop_up_text("Pasted from clipboard!", "#00ff00")
+
+
+@kb.add('c-x', filter=~is_pop_up)
+def cut_to_clipboard(event):
+    data = editor.buffer1.cut_selection()
+    editor.clipboard.set_data(data)
+    editor.pop_up_text("Cut to clipboard!", "#00ff00")
 
 
 @ kb.add('c-o')
