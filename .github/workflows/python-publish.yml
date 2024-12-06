@@ -30,6 +30,10 @@ jobs:
       - name: Update version in setup.py
         run: |
           sed -i "s/version=.*/version='${{ github.event.release.name }}',/" setup.py
+      
+      - name: Echo version
+        run: |
+          cat setup.py
 
       - name: Build release distributions
         run: |
