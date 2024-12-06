@@ -33,6 +33,12 @@ class Editor():
     title: str
     pop_up_enabled: bool
     file_name: str
+    hotkeys: dict = {
+        "^Q": "Exit",
+        "^O": "Write out",
+        "^C": "Copy to clipboard",
+        "^V": "Paste from clipboard"
+    }
 
     def __init__(self):
 
@@ -58,7 +64,10 @@ class Editor():
             Window(content=FormattedTextControl(text=self.title),
                    style='bg:#7b39cc fg:#ffffff bold',
                    height=Dimension(max=1)),
-            self.text_scroll]
+            self.text_scroll,
+            # Spacer to push hotkey help to the bottom
+            Window(height=Dimension(weight=1)),
+            self.get_hotkey_help()],
         )
         self.layout = Layout(self.root_container)
         self.app = Application(layout=self.layout, full_screen=True,
@@ -80,7 +89,8 @@ class Editor():
                 Window(content=FormattedTextControl(text=self.title),
                        style='bg:#7b39cc fg:#ffffff bold',
                        height=Dimension(max=1)),
-                self.text_scroll,],
+                self.text_scroll,
+                self.get_hotkey_help(),],
             )
             self.layout = Layout(self.root_container)
             self.app.layout = self.layout
@@ -95,7 +105,8 @@ class Editor():
                 Window(content=FormattedTextControl(text=self.title),
                        style='bg:#7b39cc fg:#ffffff bold',
                        height=Dimension(max=1)),
-                self.text_scroll,],
+                self.text_scroll,
+                self.get_hotkey_help(),],
             )
             self.layout = Layout(self.root_container)
             self.app.layout = self.layout
@@ -113,7 +124,8 @@ class Editor():
                    style='bg:#7b39cc fg:#ffffff bold',
                    height=Dimension(max=1)),
             self.text_scroll,
-            yes_no_window],
+            yes_no_window,
+            self.get_hotkey_help()],
         )
         self.layout = Layout(self.root_container)
         self.app.layout = self.layout
@@ -132,7 +144,8 @@ class Editor():
                 Window(content=FormattedTextControl(text=self.title),
                        style='bg:#7b39cc fg:#ffffff bold',
                        height=Dimension(max=1)),
-                self.text_scroll,],
+                self.text_scroll,
+                self.get_hotkey_help(),],
             )
             self.layout = Layout(self.root_container)
             self.app.layout = self.layout
@@ -154,7 +167,8 @@ class Editor():
                 Window(content=FormattedTextControl(text=self.title),
                        style='bg:#7b39cc fg:#ffffff bold',
                        height=Dimension(max=1)),
-                self.text_scroll,],
+                self.text_scroll,
+                self.get_hotkey_help(),],
             )
             self.layout = Layout(self.root_container)
             self.app.layout = self.layout
@@ -186,7 +200,8 @@ class Editor():
                    style='bg:#7b39cc fg:#ffffff bold',
                    height=Dimension(max=1)),
             self.text_scroll,
-            VSplit([prefix_window, entry_window])],
+            VSplit([prefix_window, entry_window]),
+            self.get_hotkey_help()],
         )
 
         self.layout = Layout(self.root_container)
@@ -208,7 +223,8 @@ class Editor():
             self.text_scroll,
             # Spacer to push text_window up
             Window(height=Dimension(weight=1)),
-            text_window],
+            text_window,
+            self.get_hotkey_help()],
         )
 
         self.layout = Layout(self.root_container)
@@ -220,6 +236,12 @@ class Editor():
         self.buffer1.insert_text(text)
         self.buffer1.cursor_position = 0
 
+    def get_hotkey_help(self):
+        hotkey_panel = VSplit([
+            VSplit(
+                [Window(content=FormattedTextControl(text=f"{hotkey}"), width=Dimension(min=3, max=3), style="fg:#00ffaa bold"), Window(content="", width=Dimension(min=1, max=1)), Window(content=FormattedTextControl(text=f"{desc}"), width=Dimension(min=1, max=20), style="fg:#ffffff bold")],) for hotkey, desc in self.hotkeys.items()])
+        return hotkey_panel
+
     def set_title(self, title):
         self.title = title
         self.update_ui()
@@ -229,7 +251,7 @@ class Editor():
         self.app.run()
 
 
-@ kb.add('c-z', filter=~is_pop_up)
+@ kb.add('c-q', filter=~is_pop_up)
 def exit_(event):
     editor.pop_up_confirm("Exit from file? (y/n)", "#00ccff",
                           yes_cb=event.app.exit)
