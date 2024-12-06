@@ -1,5 +1,5 @@
 build:
-	python -m build
+	source .venv/scripts/activate && python -m build
 
 clean-venv:
 	rm -rf .venv
@@ -26,5 +26,10 @@ install:
 		pip install --editable .; \
 	)
     
-
+make upload:
+	( \
+		$(MAKE) clean-dist; \
+		$(MAKE) build; \
+		source .venv/scripts/activate && pip install twine && python -m twine upload dist/*; \
+	)
 
