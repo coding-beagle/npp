@@ -12,6 +12,7 @@ from prompt_toolkit.styles import Style
 from prompt_toolkit.filters import Condition
 from prompt_toolkit.clipboard.pyperclip import PyperclipClipboard
 from prompt_toolkit.clipboard import Clipboard
+import pkg_resources
 
 kb = KeyBindings()
 
@@ -299,9 +300,19 @@ def write_out_(event, filter=~is_pop_up):
 
 @ click.command()
 @ click.argument('filename', required=False)
-def cli(filename: str) -> int:
+@ click.option('--version', is_flag=True, required=False)
+@ click.option('--hi_dave', is_flag=True, required=False)
+def cli(filename: str, version: bool = False, hi_dave: bool = False) -> int:
     """Open a file in the NanoPlusPlus text editor!"""
     # try:
+    if (version):
+        click.echo(
+            f"You are using: npp {pkg_resources.get_distribution('nanoplusplus').version}")
+        return 0
+    if (hi_dave):
+        click.echo("OMG " + click.style("SWARM6IX", fg="red") +
+                   " Bassist and " + click.style("SWARMED", fg="green") + " guitarist " + click.style("Dave Curtis", italic=True) + "!")
+        return 0
     if (filename is None):
         filename = ""
     target = Path(filename)
