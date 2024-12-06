@@ -6,4 +6,6 @@ For example npp includes more familiar text selection, copying to clipboard and 
 
 Installation should be fairly simple:
 
-init a virtual environment and `pip install --editable .` inside of this project repo!
+Initialise a virtual environment and `pip install nanoplusplus`
+
+Now when you have that virtual environment activated, NPP will be available to use!
