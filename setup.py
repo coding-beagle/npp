@@ -18,7 +18,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'npp = nanoplusplus.scripts.nanoplusplus:cli',
+            'npp = nanoplusplus.main:cli',
         ],
     },
 )
