@@ -21,4 +21,5 @@ setup(
             'npp = nanoplusplus.scripts.nanoplusplus:cli',
         ],
     },
+    python_requires='>=3.6',  # I'm sure this could work on older versions of python
 )
