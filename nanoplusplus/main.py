@@ -37,6 +37,7 @@ class Editor():
     hotkeys: dict = {
         "^Q": "Exit",
         "^O": "Write out",
+        "^A": "Select all",
         "^C": "Copy to clipboard",
         "^V": "Paste from clipboard",
         "^X": "Cut to clipboard",
@@ -300,6 +301,13 @@ def write_out_(event, filter=~is_pop_up):
         file_name = ""
     editor.pop_up_text_field("File name: ",
                              "#ffccff", prefill=file_name, yes_cb=save_file, call_cb_with_buffer=True)
+
+
+@ kb.add('c-a')
+def select_all(event, filter=~is_pop_up):
+    editor.buffer1.cursor_position = 0
+    editor.buffer1.start_selection()
+    editor.buffer1.cursor_position = len(editor.buffer1.text)
 
 
 @ click.command()

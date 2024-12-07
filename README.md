@@ -18,7 +18,7 @@ Like this:
 
 Which looks **remarkably similar** to Nano, which is intentional!
 
-The difference being the ability to set the cursor position and holding shift to select chunks of text like most other text editors:
+The difference being the ability to hold shift and move the arrow keys to select chunks of text like most other text editors (instead of Nano's convoluted mark hotkey systems):
 
 ![Selecting via arrow keys](assets/selection.gif)
 
